@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "./proto/user;user";
+
+service SendSms {
+	rpc SendSms(Request) returns (Response) {}
+}
+
+
+
+message Request {
+	string phone = 1;
+	string imgCode = 2;
+	string uuid = 3;
+}
+
+message Response {
+	// 使用切片储存图片信息
+	string Errno = 1;
+	string Errmsg =2;
+}
+
