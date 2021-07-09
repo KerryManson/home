@@ -80,3 +80,16 @@ func (h *User) SendSms(ctx context.Context, in *user.Request, out *user.Response
 	out.Errmsg = resp["msg"]
 	return nil
 }
+
+func (h *User) Register(ctx context.Context, in *user.RegReq ,out *user.Response) error {
+	err := model.RegisUser(in.Mobile, in.Passwd, in.SmsCode)
+	if err!= nil{
+		fmt.Println("注册失败:",err)
+		out.Errno = utils.RECODE_DBERR
+		out.Errmsg = utils.RecodeText(utils.RECODE_DBERR)
+		return err
+	}
+	out.Errno = utils.RECODE_OK
+	out.Errmsg = utils.RecodeText(utils.RECODE_OK)
+	return nil
+}

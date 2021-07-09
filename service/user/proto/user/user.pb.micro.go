@@ -33,32 +33,33 @@ var _ context.Context
 var _ client.Option
 var _ server.Option
 
-// Api Endpoints for SendSms service
+// Api Endpoints for User service
 
-func NewSendSmsEndpoints() []*api.Endpoint {
+func NewUserEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{}
 }
 
-// Client API for SendSms service
+// Client API for User service
 
-type SendSmsService interface {
+type UserService interface {
 	SendSms(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error)
+	Register(ctx context.Context, in *RegReq, opts ...client.CallOption) (*Response, error)
 }
 
-type sendSmsService struct {
+type userService struct {
 	c    client.Client
 	name string
 }
 
-func NewSendSmsService(name string, c client.Client) SendSmsService {
-	return &sendSmsService{
+func NewUserService(name string, c client.Client) UserService {
+	return &userService{
 		c:    c,
 		name: name,
 	}
 }
 
-func (c *sendSmsService) SendSms(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
-	req := c.c.NewRequest(c.name, "SendSms.SendSms", in)
+func (c *userService) SendSms(ctx context.Context, in *Request, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "User.SendSms", in)
 	out := new(Response)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -67,27 +68,43 @@ func (c *sendSmsService) SendSms(ctx context.Context, in *Request, opts ...clien
 	return out, nil
 }
 
-// Server API for SendSms service
+func (c *userService) Register(ctx context.Context, in *RegReq, opts ...client.CallOption) (*Response, error) {
+	req := c.c.NewRequest(c.name, "User.Register", in)
+	out := new(Response)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
 
-type SendSmsHandler interface {
+// Server API for User service
+
+type UserHandler interface {
 	SendSms(context.Context, *Request, *Response) error
+	Register(context.Context, *RegReq, *Response) error
 }
 
-func RegisterSendSmsHandler(s server.Server, hdlr SendSmsHandler, opts ...server.HandlerOption) error {
-	type sendSms interface {
+func RegisterUserHandler(s server.Server, hdlr UserHandler, opts ...server.HandlerOption) error {
+	type user interface {
 		SendSms(ctx context.Context, in *Request, out *Response) error
+		Register(ctx context.Context, in *RegReq, out *Response) error
 	}
-	type SendSms struct {
-		sendSms
+	type User struct {
+		user
 	}
-	h := &sendSmsHandler{hdlr}
-	return s.Handle(s.NewHandler(&SendSms{h}, opts...))
+	h := &userHandler{hdlr}
+	return s.Handle(s.NewHandler(&User{h}, opts...))
 }
 
-type sendSmsHandler struct {
-	SendSmsHandler
+type userHandler struct {
+	UserHandler
 }
 
-func (h *sendSmsHandler) SendSms(ctx context.Context, in *Request, out *Response) error {
-	return h.SendSmsHandler.SendSms(ctx, in, out)
+func (h *userHandler) SendSms(ctx context.Context, in *Request, out *Response) error {
+	return h.UserHandler.SendSms(ctx, in, out)
+}
+
+func (h *userHandler) Register(ctx context.Context, in *RegReq, out *Response) error {
+	return h.UserHandler.Register(ctx, in, out)
 }

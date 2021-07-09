@@ -1,1 +1,1 @@
-service getcaptcha
+service user

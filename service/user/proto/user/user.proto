@@ -4,10 +4,16 @@ package user;
 
 option go_package = "./proto/user;user";
 
-service SendSms {
+service User {
 	rpc SendSms(Request) returns (Response) {}
+	rpc Register(RegReq) returns(Response) {}
 }
 
+message RegReq{
+	string Mobile =1;
+	string Passwd =2;
+	string SmsCode =3;
+}
 
 
 message Request {

@@ -6,15 +6,16 @@ import (
 	"github.com/micro/go-micro/v2/registry"
 	"github.com/micro/go-plugins/registry/consul/v2"
 	"user/handler"
-	"user/proto/user"
 	"user/model"
+	"user/proto/user"
 )
 var consulReg registry.Registry
 
 func main() {
 
-
+	// 初始化redis连接池
 	model.InitRedis()
+	//初始化新的consul
 	consulReg = consul.NewRegistry()
 
 
@@ -27,7 +28,7 @@ func main() {
 	)
 
 	// Register handler
-	user.RegisterSendSmsHandler(srv.Server(), new(handler.User))
+	user.RegisterUserHandler(srv.Server(), new(handler.User))
 
 	// Run service
 	if err := srv.Run(); err != nil {
